@@ -1,0 +1,1370 @@
+# MASTER PROMPT: GENERATE A COMPLETE ENTERPRISE-STYLE SELENIUM 4 BDD AUTOMATION FRAMEWORK
+
+## 1. ROLE AND EXPECTATIONS
+
+Act as a Senior QA Automation Architect and Selenium Automation Engineer with 10+ years of professional experience in Java, Selenium WebDriver 4, Cucumber BDD, TestNG, Maven, Page Object Model (POM), test framework architecture, reusable utilities, reporting, debugging, and CI/CD integration.
+
+Your task is to design and generate a complete, professional, maintainable, reusable, and executable BDD automation framework from scratch in the current VS Code workspace.
+
+Use the architecture and coding standards specified in this prompt consistently throughout the newly generated framework. Do not depend on any new framework or application-specific implementation.
+
+The generated framework must follow the architecture, naming conventions, and coding standards defined in this prompt. Build the framework consistently from scratch rather than adapting an unrelated defined architecture.
+
+The framework must be reusable across different web applications. Application-specific features, page objects, URLs, and business workflows must remain separate from generic framework components.
+
+## 2. PRIMARY OBJECTIVES
+
+Perform the following tasks in order:
+
+1. Define the target architecture for a new framework.
+2. Establish compatible dependencies, packages, classes, execution flow, and coding conventions.
+3. Identify all required components and design them to avoid duplication and architectural weaknesses.
+4. Create a complete Maven-based Java Selenium 4 BDD framework from scratch.
+5. Generate all required configuration files, feature files, step definitions, page objects, runners, hooks, utilities, and reporting components.
+6. Ensure every component follows the conventions and architecture defined in this prompt.
+7. Validate imports, method signatures, package names, dependencies, file references, and execution flow.
+8. Execute available build and test commands when the environment permits.
+9. Fix issues introduced by your changes and report any remaining problems honestly.
+
+Do not stop after creating a folder structure or sample classes. Implement the actual files with complete, meaningful code.
+
+Do not produce pseudocode, empty methods, unexplained TODOs, or placeholder implementations for required framework functionality.
+
+## 3. MANDATORY INITIAL DESIGN AND WORKSPACE CHECK
+
+Before generating files, check the current workspace only to determine the destination and avoid overwriting unrelated user files. Do not analyze, reuse, or depend on an existing automation framework. Create the new framework from scratch. Plan the following components:
+
+- pom.xml
+- src/main/java
+- src/test/java
+- src/test/resources
+- src/main/resources, if present
+- All feature files
+- All step-definition classes
+- All page-object classes
+- All utility classes
+- Browser factory and driver-management classes
+- Hooks and runner classes
+- Configuration and properties files
+- Reporting and screenshot utilities
+- Existing logging configuration
+- Existing test data and test-data readers
+- Existing README and execution instructions
+- Existing TestNG and Cucumber configuration
+
+Define the dependency map for the new framework, showing how its classes depend on one another and how execution flows through the system.
+
+Design the execution flow as:
+
+Maven command → TestNG/Cucumber runner → feature file → step definition → page object → utility/driver → browser interaction → assertion → hook → report and cleanup.
+
+Choose a clear, consistent base package, such as com.example.automation, and use it consistently across all generated files. Keep the base package configurable in the design documentation if needed.
+
+Create docs/FRAMEWORK_ANALYSIS.md containing:
+
+- Target architecture
+- Selected technology stack and versions
+- Generated package structure
+- Execution flow
+- Responsibilities of each component
+- Design decisions and rationale
+- Quality gates and validation plan
+- Compatibility considerations
+
+## 4. TECHNOLOGY STACK AND COMPATIBILITY
+
+Use the following technologies:
+
+- Language: Java
+- Build tool: Maven
+- Browser automation: Selenium WebDriver 4
+- BDD: Cucumber JVM
+- Test runner: TestNG
+- Page design: Page Object Model with PageFactory
+- Locator strategy: Selenium @FindBy
+- Reporting: ExtentReports integration
+- Logging: SLF4J with a compatible logging implementation, if needed
+- Configuration: Java Properties
+- Test data: Cucumber DataTable, Scenario Outline, Examples, and reusable test-data utilities
+- Browser support: Chrome, Firefox, and Edge where their drivers and environment are available
+- Source control: Git-compatible project structure
+- Editor: Visual Studio Code
+
+Create a new pom.xml with mutually compatible dependency versions. Select stable Selenium 4, Cucumber JVM, TestNG, reporting, logging, and Maven plugin versions that work together. Centralize versions using Maven properties and do not add unnecessary or conflicting dependencies.
+
+Do not downgrade Selenium to Selenium 3 or use deprecated Selenium 3 APIs.
+
+Use Java 8-compatible syntax only if the new framework's configured Java version requires it. Otherwise, follow the project's supported Java version.
+
+Ensure the following dependencies are compatible with one another:
+
+- selenium-java
+- cucumber-java
+- cucumber-testng
+- TestNG
+- ExtentReports and its Cucumber adapter, if used
+- Logging dependencies
+- Maven compiler and Surefire plugins
+
+Do not add unnecessary dependencies. Avoid duplicate or conflicting libraries.
+
+## 5. TARGET ARCHITECTURE
+
+Use the following logical architecture as the blueprint for the new framework. Implement it consistently from scratch.
+
+### A. Feature files
+
+Location: src/test/resources/features/
+
+Responsibilities:
+
+- Store business-readable Gherkin scenarios.
+- Use Feature, optional Background, Scenario, Scenario Outline, Examples, Given, When, Then, And, and But appropriately.
+- Keep scenarios independent and understandable.
+- Avoid Java code, Selenium commands, XPath expressions, or implementation details inside feature files.
+- Use reusable, business-oriented step wording.
+- Use Scenario Outline for data-driven scenarios where appropriate.
+- Use tags such as @smoke, @regression, and @critical only where meaningful.
+
+Generic example:
+
+Feature: User authentication
+
+  @smoke @regression
+  Scenario: Authenticate with valid credentials
+    Given the user opens the application
+    When the user submits valid authentication details
+    Then the application should display the authenticated user area
+
+Treat this as an illustrative example only. Do not assume every application has a login page. Generate application-specific scenarios only from verified requirements, new framework behavior, or clearly identified sample requirements.
+
+### B. Step-definition classes
+
+Location: src/test/java/, following the newly defined package structure.
+
+Responsibilities:
+
+- Map Gherkin steps to Cucumber annotations.
+- Use @Given, @When, @Then, and @And where supported by the installed Cucumber version.
+- Call page-object methods and shared utilities.
+- Use assertions to verify expected behavior.
+- Keep step definitions short and readable.
+- Do not place raw Selenium locator definitions in step-definition classes.
+- Do not duplicate browser initialization or teardown.
+- Reuse existing step definitions when the business meaning matches.
+- Avoid ambiguous step definitions.
+- Use constructor injection or the existing supported dependency-injection approach for shared context.
+
+Follow the source project's dependency-injection pattern. If PicoContainer or another DI mechanism is already configured, preserve and validate it rather than introducing a conflicting mechanism.
+
+Do not create a new step-definition class for every scenario unnecessarily. Group related steps by business functionality, consistent with the new framework.
+
+### C. Page-object classes
+
+Location: src/main/java/, following the newly defined page package conventions.
+
+This is a mandatory design requirement.
+
+Implement Page Object Model using Selenium 4 and PageFactory, following the requirements and examples in this prompt.
+
+Use private WebElement fields annotated with @FindBy.
+
+Example:
+
+    public class ExamplePage {
+
+        private final WebDriver driver;
+        private final WebDriverWait wait;
+
+        @FindBy(id = "exampleField")
+        private WebElement exampleField;
+
+        @FindBy(css = "button[type='submit']")
+        private WebElement submitButton;
+
+        public ExamplePage(WebDriver driver) {
+            this.driver = driver;
+            this.wait = new WebDriverWait(
+                driver, Duration.ofSeconds(10));
+            PageFactory.initElements(driver, this);
+        }
+
+        public WebElement getExampleField() {
+            return exampleField;
+        }
+
+        public WebElement getSubmitButton() {
+            return submitButton;
+        }
+
+        public void enterExampleValue(String value) {
+            wait.until(
+                ExpectedConditions.visibilityOf(exampleField));
+            exampleField.clear();
+            exampleField.sendKeys(value);
+        }
+
+        public void clickSubmit() {
+            wait.until(
+                ExpectedConditions.elementToBeClickable(submitButton));
+            submitButton.click();
+        }
+    }
+
+Adapt the code to the project's actual conventions and Java version. Add the necessary Selenium imports.
+
+Page-object rules:
+
+1. Declare WebElement fields as private.
+2. Use @FindBy for stable, known page elements.
+3. Initialize PageFactory in the page constructor.
+4. Use getters for WebElement access where that is the established project convention.
+5. Keep locators centralized in their page objects.
+6. Never scatter hardcoded XPath or CSS selectors across step definitions.
+7. Use meaningful method names that describe user actions or business operations.
+8. Keep page-specific business operations inside page objects.
+9. Do not expose unnecessary implementation details to test classes.
+10. Reuse generated page objects rather than creating duplicate classes for the same page.
+11. Do not create public setters for WebElement fields merely to satisfy a getter/setter requirement. Use setters for configuration, test data, or model objects when appropriate.
+12. Use constructor injection for WebDriver when that matches the defined architecture.
+13. Do not use static WebDriver fields in page objects.
+14. Do not create multiple PageFactory instances for the same page unnecessarily.
+15. Add only locators supported by the inspected application or verified test requirements.
+
+If an element locator is unknown, inspect existing code, available application markup, or supplied evidence. Do not invent a supposedly verified locator. Clearly identify unresolved locators.
+
+Use Selenium 4's Duration-based WebDriverWait API.
+
+Prefer explicit waits for visibility, clickability, presence, and expected state. Avoid fixed Thread.sleep calls except for a documented case where no appropriate condition is available.
+
+Do not mix implicit and explicit waits indiscriminately.
+
+For complex interactions, use small page-object helper methods rather than duplicating synchronization logic.
+
+### D. Business logic in page objects
+
+Implement business operations as meaningful reusable methods.
+
+Examples of generic operation types:
+
+- Open or navigate to a page
+- Enter values into fields
+- Select options
+- Click action buttons
+- Complete a multi-step form
+- Submit a form
+- Navigate between tabs or sections
+- Read displayed information
+- Verify a page-specific state when appropriate
+- Handle loading overlays
+- Wait for a page transition
+
+Use a consistent convention for business logic: provide getters where appropriate and meaningful page methods for actions such as editing, filling sections, and submitting changes.
+
+Do not place all business logic inside step definitions.
+
+Avoid creating a single oversized page object containing unrelated application modules.
+
+Separate page objects according to actual pages or meaningful functional components.
+
+### E. WebDriver and browser management
+
+Create a centralized browser-management utility, such as BrowserFactory and DriverManager, with clearly separated responsibilities.
+
+Responsibilities:
+
+- Create the requested browser.
+- Configure browser options.
+- Initialize WebDriver exactly once per scenario or test lifecycle as designed.
+- Store and retrieve the current driver safely.
+- Support Chrome, Firefox, and Edge when configured and available.
+- Maximize the browser when appropriate.
+- Apply timeouts from configuration.
+- Provide consistent error messages for unsupported browsers.
+- Quit the driver after execution.
+- Prevent accidental reuse of a closed driver.
+- Avoid leaking browser processes.
+
+Use ThreadLocal<WebDriver> only if it is consistent with the architecture defined in this prompt and necessary for safe parallel execution.
+
+If ThreadLocal is used, provide safe get/set/remove operations and ensure cleanup occurs in finally blocks or equivalent lifecycle handling.
+
+Do not enable parallel execution until shared context, hooks, driver state, test data, and reporting are thread-safe.
+
+Prefer Selenium Manager for compatible Selenium 4 environments unless the project has an established, valid driver-management configuration. Do not hardcode machine-specific driver executable paths.
+
+### F. Hooks
+
+Create a Cucumber hooks class using the package structure and lifecycle conventions defined for the new framework.
+
+Use @Before and @After from io.cucumber.java.
+
+Responsibilities:
+
+@Before:
+- Initialize scenario-level resources.
+- Start the browser when required.
+- Create the scenario context.
+- Initialize reporting integrations if required by the existing framework.
+
+@After:
+- Capture a screenshot for failed scenarios when a valid driver exists.
+- Attach screenshots to Cucumber reports when supported.
+- Record the scenario outcome.
+- Flush or finalize reporting at the correct lifecycle level.
+- Quit the browser.
+- Clear ThreadLocal state and scenario resources.
+
+Requirements:
+
+- Do not initialize the same browser in both the runner and hooks.
+- Do not quit the driver before capturing a failure screenshot.
+- Ensure cleanup still occurs when screenshot capture fails.
+- Use compatible Cucumber hook APIs.
+- Do not confuse per-scenario cleanup with end-of-suite reporting finalization.
+- Ensure the framework does not produce duplicate screenshots or duplicate report entries unnecessarily.
+
+### G. Test runner
+
+Create a Cucumber TestNG runner using the new framework's defined naming and package conventions.
+
+Use compatible annotations such as:
+
+- @CucumberOptions
+- @RunWith only if required by the actual runner design
+- AbstractTestNGCucumberTests where compatible with the installed Cucumber/TestNG versions
+- @DataProvider for parallel scenarios only if deliberately enabled and validated
+
+Configure:
+
+- Feature file location
+- Glue package
+- Plugin configuration
+- Pretty output
+- HTML or JSON report output
+- Relevant tag expressions
+- Monitored test execution options
+
+Do not accidentally mix JUnit and TestNG runner implementations.
+
+Ensure the glue path matches the real step-definition and hook packages.
+
+Do not introduce conflicting runners that cause the same scenarios to execute multiple times.
+
+Support configurable smoke and regression execution.
+
+### H. Maven pom.xml
+
+Create a complete, valid Maven POM for the new framework.
+
+Include:
+
+- Correct groupId, artifactId, version, and packaging
+- Compatible Java compiler configuration
+- Selenium 4 dependencies
+- Cucumber Java and TestNG integration
+- TestNG dependency
+- Compatible reporting dependencies
+- Logging dependencies when required
+- Maven Compiler Plugin
+- Maven Surefire Plugin
+- Any existing plugin required for the current test execution model
+
+Requirements:
+
+1. Use consistent dependency versions.
+2. Avoid duplicate dependencies.
+3. Avoid mixing incompatible Cucumber versions.
+4. Use Maven properties for centrally managed versions where practical.
+5. Ensure the project compiles with the configured JDK.
+6. Ensure Maven can discover the intended tests.
+7. Ensure the Cucumber TestNG runner is correctly selected.
+8. Preserve verified compatible configuration.
+9. Do not remove a dependency before checking its usages.
+10. Do not claim a successful Maven build unless it actually succeeds.
+
+The framework should support commands similar to:
+
+    mvn clean test
+
+And configurable executions similar to:
+
+    mvn clean test -Dbrowser=chrome
+    mvn clean test -Dcucumber.filter.tags="@smoke"
+    mvn clean test -Dcucumber.filter.tags="@regression"
+
+Adjust command-line properties and runner configuration to the actual project. Verify that every documented command is supported.
+
+### I. Configuration properties
+
+Create or maintain a configuration file such as:
+
+src/test/resources/config/config.properties
+
+Use the resource locations specified in this prompt consistently.
+
+Use configurable values for:
+
+- Base URL
+- Browser name
+- Explicit wait timeout
+- Page-load timeout
+- Script timeout
+- Headless mode
+- Screenshot directory
+- Report output directory
+- Logging level where appropriate
+- Other genuine framework settings
+
+Illustrative format:
+
+    baseUrl=https://example.invalid
+    browser=chrome
+    explicitWaitTimeout=10
+    pageLoadTimeout=30
+    scriptTimeout=20
+    headless=false
+
+These values are examples, not verified application settings.
+
+Create a centralized configuration utility to load properties once, expose typed accessors, and provide meaningful errors for missing or invalid required settings.
+
+Allow Maven system properties or environment variables to override suitable configuration values.
+
+Do not hardcode application URLs, credentials, timeout values, or browser paths throughout the code.
+
+Do not commit passwords, API tokens, or other secrets to the repository. Use environment variables or an appropriate secret-management mechanism.
+
+Ensure properties files are actually included in the runtime classpath.
+
+### J. Utilities
+
+Design the utility layer before implementation. Create each utility once, with a single clear responsibility, and avoid duplicate functionality.
+
+Create or maintain utilities as needed:
+
+1. ConfigReader / ConfigurationManager
+   - Load properties.
+   - Resolve configuration overrides.
+   - Validate required settings.
+   - Return typed values.
+
+2. BrowserFactory / GetBrowser
+   - Create browser instances.
+   - Configure options.
+   - Validate browser names.
+   - Return a usable WebDriver.
+
+3. Base / DriverManager
+   - Manage the current WebDriver lifecycle.
+   - Provide safe driver access.
+   - Ensure cleanup.
+
+4. WaitUtils
+   - Explicit waits for visible, clickable, present, and invisible states.
+   - Avoid unnecessary repeated wait implementations.
+
+5. ScreenshotUtils
+   - Capture screenshots.
+   - Save using unique, safe file names.
+   - Create missing directories.
+   - Handle screenshot errors appropriately.
+
+6. ElementUtils
+   - Add only reusable operations that reduce meaningful duplication.
+   - Do not create a wrapper for every Selenium method.
+
+7. JavaScriptUtils
+   - Use JavaScript only where normal WebDriver interaction is insufficient or a specific use case requires it.
+
+8. TestDataUtils
+   - Read supported test data from existing sources.
+   - Avoid embedding sensitive data in source code.
+
+9. ScenarioContext
+   - Share scenario-scoped state when needed.
+   - Prevent state leakage between scenarios.
+
+10. Reporting utility
+    - Integrate with the existing ExtentReports setup.
+    - Centralize report initialization and finalization.
+    - Ensure scenario reporting remains thread-safe if parallel execution is enabled.
+
+11. Logging utility or logging configuration
+    - Record useful execution information.
+    - Avoid logging passwords, tokens, or sensitive personal information.
+
+12. Assertion utilities
+    - Add common assertion helpers only where they improve consistency.
+    - Preserve readable failure messages and use the project's established assertion style.
+
+Do not create unnecessary utilities merely because they appear in this list. Implement the required capabilities with clear responsibilities and avoid duplicate functionality.
+
+Keep utilities generic and application-independent.
+
+### K. Test data management
+
+Use Cucumber DataTable and Scenario Outline for suitable BDD data-driven tests.
+
+Example:
+
+    Scenario Outline: Submit a form with different values
+      Given the user opens the relevant form
+      When the user submits the form with "<inputValue>"
+      Then the expected validation outcome should be displayed
+
+      Examples:
+        | inputValue |
+        | validValue |
+        | invalidValue |
+
+Use actual business requirements when generating real test data.
+
+Keep test data separate from page objects where practical.
+
+Do not place credentials directly in feature files.
+
+Do not create external Excel or database integrations unless the repository or requirements justify them.
+
+### L. Feature-file quality
+
+Generate feature files in valid Gherkin syntax.
+
+Requirements:
+
+- One clear business capability per Feature.
+- Scenario titles describe behavior, not implementation.
+- Given describes initial context.
+- When describes an action.
+- Then describes observable expected outcomes.
+- Avoid unnecessary duplication of Given/When/Then steps.
+- Use Background only for genuinely common setup.
+- Use Scenario Outline for repeated data-driven behavior.
+- Apply tags consistently.
+- Keep scenarios independent.
+- Avoid dependence on execution order.
+- Use explicit expected outcomes rather than vague statements such as "it should work."
+- Do not invent business requirements or claim unknown expected behavior.
+
+Where requirements are missing, identify the gaps and generate only supported scenarios.
+
+### M. Selenium 4 coding standards
+
+Use current Selenium 4 APIs.
+
+Mandatory rules:
+
+- Use WebDriver, WebElement, By, WebDriverWait, ExpectedConditions, Actions, Select, and JavaScriptExecutor appropriately.
+- Use Duration-based timeout APIs.
+- Prefer stable IDs, names, accessible attributes, or robust CSS selectors when available.
+- Use XPath when it is the most appropriate supported locator.
+- Use relative XPath expressions rather than unnecessarily long absolute XPath expressions.
+- Keep locators inside the relevant page object.
+- Use @FindBy for known page elements.
+- Initialize PageFactory correctly.
+- Use explicit waits instead of arbitrary sleeps.
+- Handle stale elements by addressing the underlying synchronization or page-refresh issue.
+- Avoid swallowing NoSuchElementException, TimeoutException, or assertion failures.
+- Do not use deprecated Selenium 3 APIs.
+- Do not use Thread.sleep as the default synchronization strategy.
+- Do not use JavaScript clicks as a universal workaround for failed WebDriver interactions.
+- Do not introduce implicit waits alongside explicit waits without a justified and documented strategy.
+- Avoid duplicate WebDriver instances.
+- Ensure driver cleanup after every scenario.
+- Do not use unsupported browser-specific APIs without checking compatibility.
+
+Use Selenium 4 relative locators where they offer a clear advantage and the required element relationships are known.
+
+Important: Selenium relative locators such as withTagName(...).above(...), below(...), near(...), toLeftOf(...), and toRightOf(...) are evaluated through locator expressions and should be used inside suitable methods. Do not put a runtime relative-locator expression directly into @FindBy.
+
+### N. Page-object getters, setters, and encapsulation
+
+Apply Java OOP principles consistently.
+
+- Keep page-object WebElement fields private.
+- Expose getters only when needed by the established framework or calling code.
+- Implement meaningful action methods for business operations.
+- Use setters for mutable configuration, data models, and scenario context where appropriate.
+- Avoid unnecessary setters that expose internal WebDriver state.
+- Prefer constructors for required dependencies.
+- Use encapsulation to protect internal state.
+- Use inheritance only where there is a genuine shared abstraction.
+- Avoid oversized base classes with unrelated functionality.
+- Avoid static mutable state for scenario-specific information.
+
+If the architecture defined in this prompt uses getter-based element access together with business-action methods, preserve that style unless a concrete defect requires a change.
+
+### O. Assertions and validation
+
+Use the assertion library already established in the project, such as TestNG Assert.
+
+Assertions must validate observable application behavior.
+
+Examples of validation categories:
+
+- Page title or heading
+- Navigation result
+- Successful or unsuccessful form submission
+- Validation message
+- Displayed record
+- Status change
+- Presence or absence of an element
+- Relevant business outcome
+
+Do not make every assertion inside page objects. Prefer keeping scenario-level expected-result assertions in step definitions or a dedicated assertion layer, while keeping page objects responsible for page interaction and state access.
+
+Provide meaningful assertion messages.
+
+Do not replace failing assertions with logging or broad exception handling.
+
+### P. Reporting, screenshots, and logging
+
+Implement a compatible ExtentReports integration for the newly generated framework.
+
+Provide:
+
+- Scenario execution status
+- Passed, failed, and skipped outcomes where supported
+- Failure messages
+- Failure screenshots
+- Cucumber HTML/JSON output where configured
+- Useful execution logs
+- Clear report locations
+
+Ensure screenshots are attached to the correct scenario.
+
+Use unique file names to prevent parallel-test collisions.
+
+Avoid creating a new report instance for every step.
+
+Flush reports at the correct suite or run lifecycle stage.
+
+Do not claim screenshots or reports are generated unless the code and execution confirm that they are.
+
+### Q. Error handling and defect prevention
+
+Handle errors deliberately.
+
+- Throw clear exceptions for unsupported browser names.
+- Report missing configuration properties clearly.
+- Preserve the original cause of unexpected exceptions.
+- Do not silently return null from required framework factories.
+- Do not catch Exception broadly and continue as though a test passed.
+- Do not hide assertion failures.
+- Ensure teardown executes after failures.
+- Record sufficient diagnostic information to investigate failed tests.
+- Avoid exposing secrets in logs.
+- Distinguish application defects from automation-script defects, environment issues, configuration problems, and test-data problems.
+
+### R. Parallel execution
+
+Define and validate the TestNG and Cucumber runner configuration before enabling any parallel execution.
+
+If parallel execution is enabled:
+
+- Use isolated WebDriver instances.
+- Ensure scenario context is isolated.
+- Ensure report updates are thread-safe.
+- Ensure screenshots have unique names.
+- Avoid shared mutable page objects across scenarios.
+- Avoid shared test-data mutation.
+- Verify hook execution and cleanup.
+- Validate actual concurrent execution.
+
+Do not enable parallel execution merely by setting a thread count. Keep it disabled until the framework is demonstrably safe.
+
+### S. Security and environment independence
+
+The framework must not depend on a developer's local machine paths.
+
+- Use classpath resource loading for configuration where appropriate.
+- Avoid absolute paths such as C:\Users\...
+- Keep browser binaries and driver paths configurable if they are needed.
+- Do not hardcode credentials.
+- Do not disable browser security to make tests pass.
+- Do not bypass CAPTCHA, MFA, or other security controls in production.
+- Use approved test-environment configurations for applications with such controls.
+- Keep generated reports and screenshots free from unnecessary sensitive information.
+
+## 6. EXPECTED PROJECT FILES
+
+Generate the following logical components as part of the new framework. Create each required file once and keep responsibilities separate.
+
+- pom.xml
+- README.md
+- .gitignore
+- Configuration properties file
+- Browser factory or driver manager
+- Base or shared driver-management class
+- Wait utilities
+- Screenshot utilities
+- Configuration reader
+- Scenario context when required
+- Cucumber hooks
+- Cucumber TestNG runner
+- Feature files
+- Step-definition classes
+- Page-object classes
+- Reporting integration
+- Logging configuration
+- Test-data support
+- Framework analysis document
+- Execution and validation documentation
+
+A typical logical structure could be:
+
+src/main/java/
+  com/example/automation/
+    pages/
+    utility/
+    config/
+    driver/
+    reporting/
+    context/
+
+src/test/java/
+  com/example/automation/
+    stepDefinition/
+    runner/
+    hooks/
+
+src/test/resources/
+  features/
+  config/
+    config.properties
+  testdata/
+  log4j2.xml
+
+docs/
+  FRAMEWORK_ANALYSIS.md
+  FRAMEWORK_EXECUTION.md
+  VALIDATION_REPORT.md
+
+This structure is illustrative but should be implemented consistently for the new framework. Do not create duplicate configuration or logging files with conflicting purposes.
+
+## 7. IMPLEMENTATION STRATEGY
+
+Work in controlled phases.
+
+### Phase 1: Design
+
+Define the new framework architecture, package structure, dependency versions, component responsibilities, and execution flow. Create the analysis document before implementation.
+
+### Phase 2: Plan
+
+List all files to be created and define their responsibilities.
+
+For every planned file, identify:
+
+- File path
+- Existing implementation, if any
+- Required modification
+- Reason for the change
+- Dependencies on other classes
+- Validation approach
+
+Prioritize a valid dependency configuration, reliable driver lifecycle, correct glue paths, required dependencies, and clear separation of responsibilities.
+
+### Phase 3: Core framework
+
+Implement or refactor:
+
+- Maven configuration
+- Configuration reader
+- Browser factory
+- Driver lifecycle management
+- Wait utilities
+- Screenshot support
+- Scenario context
+- Hooks
+- Reporting lifecycle
+
+Use consistent class names and stable APIs across the newly generated framework.
+
+### Phase 4: BDD layer
+
+Implement or refactor:
+
+- Feature files
+- Step-definition classes
+- Cucumber TestNG runner
+- Dependency injection
+- Tag-based execution
+- Assertions
+
+Ensure the feature steps map unambiguously to step definitions.
+
+### Phase 5: Page objects
+
+Implement or refactor:
+
+- PageFactory initialization
+- @FindBy locators
+- Private WebElement fields
+- Getters where appropriate
+- Business-action methods
+- Reusable synchronization
+- Page-state access methods
+
+Follow the new framework's coding conventions.
+
+### Phase 6: Utilities and reports
+
+Implement or improve the required utilities, logging, screenshots, report attachment, and cleanup behavior.
+
+Avoid generating redundant code and keep each responsibility implemented in one appropriate place.
+
+### Phase 7: Validation
+
+Validate the framework in the following order:
+
+1. XML validity of pom.xml.
+2. Dependency resolution.
+3. Java compilation.
+4. Package and import consistency.
+5. Runner discovery.
+6. Feature-to-step mapping.
+7. Hook execution and dependency injection.
+8. Browser initialization and cleanup.
+9. Configuration loading.
+10. Screenshot and report lifecycle.
+11. Smoke-test execution when a valid test environment is available.
+12. Regression-test execution when the necessary environment and data are available.
+
+Use available Maven commands, such as:
+
+    mvn clean test-compile
+
+Then, where appropriate:
+
+    mvn clean test
+
+Do not run tests against an unknown production system or submit forms that create real transactions without authorization.
+
+If browser execution is unavailable, perform static validation and explicitly mark browser execution as not performed.
+
+### Phase 8: Final review
+
+Review every generated or modified file for:
+
+- Correct package declarations
+- Correct imports
+- Existing method compatibility
+- Missing methods
+- Invalid annotations
+- Duplicate classes
+- Invalid feature syntax
+- Ambiguous step definitions
+- Incorrect resource paths
+- Hardcoded machine-specific paths
+- Deprecated Selenium APIs
+- Missing waits
+- Improper exception handling
+- Browser leaks
+- Thread-safety problems
+- Incorrect report lifecycle
+- Missing cleanup
+- Unused dependencies
+- Broken Maven commands
+
+Fix issues caused by your changes before completing the task.
+
+## 8. STRICT RULES FOR COPILOT
+
+Follow these rules throughout implementation:
+
+1. Check the workspace to avoid overwriting unrelated files, but do not analyze or depend on an existing automation framework.
+2. Generate the new framework from scratch.
+3. Create one coherent framework rather than multiple competing implementations.
+4. Use the package structure defined in this prompt consistently.
+5. Do not invent application URLs, locators, expected results, or business requirements.
+6. Do not duplicate already generated utility methods.
+7. Do not move Selenium interactions into feature files.
+8. Do not put all business logic inside step definitions.
+9. Do not put all framework responsibilities into a single utility class.
+10. Do not use Selenium 3 APIs.
+11. Do not use fixed sleeps as a default waiting mechanism.
+12. Do not suppress test failures.
+13. Do not claim a build or test passed without executing it successfully.
+14. Do not overwrite unrelated user files.
+15. Do not create meaningless getter/setter methods simply to increase the number of methods.
+16. Do not add unnecessary design patterns, dependencies, or abstractions.
+17. Follow the naming and formatting conventions defined in this prompt.
+18. Generate the framework incrementally and validate each stage.
+19. If a required application-specific detail is unknown, document it as a configuration requirement rather than inventing it.
+20. Keep generic framework infrastructure separate from application-specific pages, features, and test data.
+
+## 9. REQUIRED FINAL DELIVERABLES
+
+At completion, provide:
+
+1. A complete Maven-based Java Selenium 4 BDD framework in the current workspace.
+2. All required source files with complete implementations.
+3. All required feature files and step definitions supported by the available requirements.
+4. Page objects following the new framework's @FindBy, PageFactory, getter, and business-method conventions.
+5. Browser and driver lifecycle management.
+6. Hooks and a working Cucumber TestNG runner.
+7. Configuration properties and centralized configuration access.
+8. Reusable utilities.
+9. Reporting, screenshots, and logging integration.
+10. Updated pom.xml.
+11. README.md with setup and execution instructions.
+12. docs/FRAMEWORK_ANALYSIS.md documenting the newly designed architecture.
+13. docs/FRAMEWORK_EXECUTION.md.
+14. docs/VALIDATION_REPORT.md.
+
+The final validation report must contain:
+
+- Files created
+- Files modified
+- Architecture implemented
+- Design risks addressed
+- Framework components generated
+- Build command executed and its actual result
+- Tests executed and their actual results
+- Tests not executed and why
+- Known limitations
+- Remaining environment or application-specific configuration requirements
+
+Distinguish clearly between static code review, successful compilation, and successful browser execution. These are different levels of validation.
+
+## 10. FINAL ACCEPTANCE CRITERIA
+
+Consider the framework complete only when:
+
+- It consistently implements the architecture and coding conventions defined in this prompt.
+- It uses Selenium 4-compatible APIs.
+- It follows Page Object Model with @FindBy and PageFactory.
+- It exposes page elements and business operations according to the new framework style.
+- Feature files use valid, business-readable Gherkin.
+- Step definitions map correctly to features.
+- The runner and hooks use compatible Cucumber and TestNG APIs.
+- WebDriver initialization and teardown are reliable.
+- Configuration is centralized and externalized.
+- Utilities are reusable without unnecessary duplication.
+- Reports and failure screenshots are integrated appropriately.
+- Maven dependencies and Java source are compatible.
+- The project can compile and execute in the available environment, or the exact blockers are documented.
+- All claims of successful validation are supported by actual execution evidence.
+
+## 11. START EXECUTION NOW
+
+Begin by checking the current VS Code workspace to determine where the new framework should be created and to avoid overwriting unrelated files. Do not inspect or depend on any existing automation framework.
+
+First produce the target architecture and implementation plan. Then create the complete framework from scratch, generating the actual files in the workspace.
+
+Do not respond with only a proposed design, sample code, or a list of recommendations. Your primary deliverable is the implemented framework.
+
+Keep the framework generic and reusable across applications. Follow the architecture defined in this prompt, including Page Object Model, @FindBy annotations, PageFactory initialization, getters and setters where appropriate, business-action methods, utility organization, feature-file format, step-definition style, hooks, runner configuration, and reporting.
+
+Start with Phase 1: define the target architecture and implementation plan before generating files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+# HYBRID MASTER PROMPT — GENERIC SELENIUM 4 + CUCUMBER BDD FRAMEWORK
+
+## 1. ROLE + OBJECTIVE
+Act as a Senior QA Automation Architect with 10+ years of experience in Java, Selenium WebDriver 4, Cucumber BDD, TestNG, Maven, POM/PageFactory, automation utilities, reporting, debugging, and CI/CD.
+
+Build a complete, maintainable, reusable Java automation framework **from scratch** in the current VS Code workspace. Implement real files and working code—not just a proposal, folder tree, pseudocode, empty methods, or unexplained TODOs.
+
+Use the workspace only to select a safe destination and avoid overwriting unrelated files. **Do not analyze, reuse, or depend on any existing automation framework.** Keep reusable framework infrastructure separate from application-specific URLs, pages, locators, workflows, features, and test data. Never invent application requirements or claim generic demo data/locators are verified.
+
+## 2. HYBRID PROMPT METHOD: HOW TO WORK
+Combine role-based, context-based, constraint-based, example-guided, and step-by-step prompting:
+1. **Design:** state the architecture, execution flow, packages, class responsibilities, dependency choices, risks, and validation plan.
+2. **Plan:** list the files to create and each file's purpose and dependencies.
+3. **Build core:** Maven/configuration, browser and driver lifecycle, waits, context, hooks, screenshots, logging, reporting.
+4. **Build BDD:** runner, features, step definitions, dependency injection, assertions, tags, and data-driven scenarios.
+5. **Build pages/utilities:** POM/PageFactory pages, reusable utilities, and clearly labeled generic demo examples only where needed.
+6. **Validate and repair:** run checks and commands available in the environment; fix issues caused by generated code.
+7. **Review and report:** inspect consistency and provide evidence-based results.
+Work incrementally, keep files consistent, and continue through implementation. Do not stop after planning. If a detail depends on the target application and is unknown, record it as a configuration requirement instead of guessing.
+
+## 3. REQUIRED STACK AND PROJECT STRUCTURE
+Use Java, Maven, Selenium WebDriver 4, Cucumber JVM, Cucumber-TestNG, TestNG, POM + PageFactory, `@FindBy`, ExtentReports (and a compatible Cucumber adapter only if needed), SLF4J with a compatible logging backend, Java Properties, Cucumber DataTable/Scenario Outline/Examples, and Chrome/Firefox/Edge support where installed. Use Selenium Manager unless a justified alternative is required. Centralize compatible dependency/plugin versions in Maven properties; avoid duplicate, conflicting, deprecated, or unnecessary dependencies.
+
+Use one consistent base package such as `com.example.automation`:
+- `src/main/java/com/example/automation/{pages,utility,config,driver,reporting,context}/`
+- `src/test/java/com/example/automation/{stepDefinition,runner,hooks}/`
+- `src/test/resources/{features,config,testdata}/`
+- `config/config.properties` (or one clearly documented classpath properties location)
+- `pom.xml`, `README.md`, `.gitignore`
+- `docs/FRAMEWORK_ANALYSIS.md`
+- `docs/FRAMEWORK_EXECUTION.md`
+- `docs/VALIDATION_REPORT.md`
+
+Avoid duplicate classes, competing implementations, and duplicate configuration/logging files. Add one suitable logging configuration. Include only useful components and explain any deviation from this structure.
+
+## 4. ARCHITECTURE AND IMPLEMENTATION REQUIREMENTS
+
+### Maven and configuration
+Create a valid Maven POM with project metadata, Java compiler settings, compatible dependencies, Maven Compiler Plugin, Surefire Plugin, and only other necessary plugins. Ensure the intended TestNG/Cucumber runner is discovered. Centralize configuration for browser, base URL, timeouts, headless mode, report paths, and screenshot paths. Support system-property overrides where appropriate. Use classpath/relative paths, not machine-specific absolute paths; never hardcode secrets.
+
+Document and make work, where the environment supports them:
+- `mvn clean test`
+- `mvn clean test -Dbrowser=chrome`
+- `mvn clean test -Dcucumber.filter.tags="@smoke"`
+- `mvn clean test -Dcucumber.filter.tags="@regression"`
+
+### Driver and browser lifecycle
+Implement a `BrowserFactory` and `DriverManager` (plus a `Base` class only if it adds value) with clear responsibilities: create browser/options, validate browser names, initialize one driver per scenario/test lifecycle, configure timeouts/window as appropriate, and reliably quit/remove the driver even after failures. Never return null for an unsupported browser or missing required configuration. Never hardcode local driver paths. Use `ThreadLocal<WebDriver>` only when needed and correctly isolate and clean it. Do not enable parallel execution until driver, scenario context, test data, hooks, screenshots, and reporting are demonstrably thread-safe.
+
+### Page Object Model — mandatory
+Use Selenium 4 POM + PageFactory. Inject `WebDriver` through page constructors; initialize `PageFactory.initElements(driver, this)`; declare known elements `private` and use `@FindBy`; centralize locators in page objects; never use static WebDriver. Provide meaningful getters where useful or required by the framework style. Do not add meaningless setters for `WebElement`; use setters for mutable configuration, models, or scenario context when appropriate.
+
+Put page-specific actions in page objects: navigation, entering/selecting data, clicks, form submission, tabs/sections, reading visible information, page-state access, and waiting for transitions/loading overlays. Keep methods focused and name them by user/business action. Do not put all business logic in step definitions or create oversized page classes. Use only evidence-backed locators; if application markup/requirements are unavailable, label sample locators as illustrative and list unresolved locators.
+
+Use explicit Selenium 4 waits with `Duration` and `ExpectedConditions` for visibility, clickability, presence, invisibility, and expected state. Avoid fixed `Thread.sleep` except when specifically justified and documented. Do not indiscriminately mix implicit and explicit waits, duplicate PageFactory instances, use Selenium 3 APIs, or hide stale-element failures.
+
+### BDD, step definitions, runner, and hooks
+Create readable Gherkin features under `src/test/resources/features/`, using `Feature`, optional `Background`, `Scenario`, `Scenario Outline`, `Examples`, `Given`, `When`, `Then`, `And`, and `But` appropriately. Keep one business capability per feature; make scenarios independent and observable; use `@smoke`, `@regression`, or `@critical` only when meaningful. Keep Java, Selenium commands, XPath, and implementation details out of feature files. Use `Background` only for genuinely shared setup and data-driven constructs when suitable.
+
+A generic illustrative example (not an assumed requirement for every application):
+```gherkin
+Feature: User authentication
+  @smoke @regression
+  Scenario: Authenticate with valid credentials
+    Given the user opens the application
+    When the user submits valid authentication details
+    Then the application should display the authenticated user area
+```
+Clearly label sample behavior and data. Do not invent real application URLs, locators, requirements, credentials, or expected results.
+
+Implement step definitions with compatible Cucumber annotations. Steps should call page/business methods and make clear assertions, not contain raw locators or browser setup/teardown. Reuse semantically equivalent steps and avoid ambiguous mappings. Group step classes by business capability, not one class per scenario. Use one compatible scenario-scoped dependency-injection mechanism (for example, PicoContainer) and constructor injection; do not mix conflicting DI approaches.
+
+Create Cucumber hooks using compatible `io.cucumber.java.Before`/`After` annotations for lifecycle setup, failure screenshots, report attachment, and cleanup. Create a TestNG Cucumber runner with correct feature/glue paths, plugin/report configuration, and tag filtering. Ensure hooks and cleanup execute correctly after failure.
+
+### Utilities, context, test data, and assertions
+Implement only useful generic components, avoiding needless wrappers:
+- `ConfigReader`: loads properties and applies supported system-property overrides.
+- `BrowserFactory` / `DriverManager`: browser creation and lifecycle.
+- `WaitUtils`: explicit waits for common states.
+- `ScreenshotUtils`: unique safe names, directory creation, failure handling.
+- `ScenarioContext`: scenario-scoped state without cross-scenario leakage.
+- Reporting utility: ExtentReports lifecycle, correct scenario association, safe flush/thread behavior.
+- Logging setup: actionable diagnostics without logging passwords, tokens, or sensitive data.
+- `TestDataUtils`: only needed data-reading support; no unnecessary Excel/database integration.
+- `ElementUtils`, `JavaScriptUtils`, or assertion helpers only where they add genuine value. Prefer normal WebDriver interactions; use JavaScript only when justified, never as a universal click workaround.
+
+Use Cucumber DataTable, Scenario Outline, and Examples where suitable. Keep data separate from page objects where practical; never place credentials in feature files. Use TestNG assertions (or one consistently selected assertion library) with meaningful failure messages. Assert observable outcomes in steps or a dedicated assertion layer; page objects should mainly interact with and expose page state. Never replace failures with logs or broad exception handling.
+
+## 5. SELENIUM QUALITY, ERROR HANDLING, AND SECURITY
+- Use Selenium 4 APIs (`WebDriver`, `WebElement`, `By`, `WebDriverWait`, `ExpectedConditions`, `Actions`, `Select`, `JavascriptExecutor`) appropriately; use `Duration`-based timeouts.
+- Prefer stable IDs, names, and accessible attributes; use robust CSS and appropriate relative XPath. Keep locators in page objects.
+- Use Selenium 4 relative locators only where they provide value and element relationships are known; do not put runtime relative-locator expressions directly in `@FindBy`.
+- Do not swallow `NoSuchElementException`, `TimeoutException`, assertion failures, or meaningful root causes. Do not catch and continue as though a test passed. Provide clear configuration/browser errors and preserve causes.
+- Ensure teardown after failure; avoid browser leaks. Distinguish application defects from automation defects, environment/configuration problems, and test-data problems.
+- Generate ExtentReports plus Cucumber HTML/JSON reports as configured. Include scenario status, failure details, relevant logs, and screenshots attached to the correct scenario. Use unique screenshot names and correct report lifecycle/flush. Do not claim reports or screenshots exist unless verified by execution.
+- Never hardcode secrets, bypass CAPTCHA/MFA/security controls, disable browser security, or use production systems/submit real transactions without authorization. Minimize sensitive data in logs, screenshots, and reports.
+- Do not enable parallel execution until thread safety is implemented and tested.
+
+## 6. DOCUMENTATION AND EXECUTION
+`README.md` must explain prerequisites, setup, configuration, browsers, project structure, how to run all tests and tag-filtered tests, report/screenshot locations, and known limitations.
+`docs/FRAMEWORK_ANALYSIS.md` must document architecture, package structure, technology/dependency choices, execution flow, class responsibilities, design decisions, risks, compatibility, and quality gates.
+`docs/FRAMEWORK_EXECUTION.md` must document configuration, commands, test execution, tags, reports, screenshots, and troubleshooting.
+`docs/VALIDATION_REPORT.md` must list created files, checks and commands actually run, actual results, tests not run and why, known limitations, and remaining application/environment configuration.
+
+Execution flow should be coherent:
+Maven → TestNG/Cucumber runner → feature → step definition → page object → utility/driver → browser interaction → assertion → hooks → report/cleanup.
+
+## 7. PHASED WORKFLOW AND QUALITY GATES
+1. **Design:** architecture, dependency compatibility, packages, execution flow, class responsibilities, validation strategy.
+2. **Plan:** exact file list, purpose, dependencies, and validation per file.
+3. **Implement core:** POM/config, driver lifecycle, waits, context, hooks, logging, screenshots, reporting.
+4. **Implement BDD:** runner, DI, features, steps, assertions, tags, data-driven tests.
+5. **Implement pages/utilities:** PageFactory, `@FindBy`, getters where useful, business actions, state access.
+6. **Validate:** check POM XML/dependency resolution, Java compilation/imports, runner discovery, Gherkin syntax and step mapping, DI/hooks, config loading, lifecycle/cleanup, report/screenshot integration, deprecated APIs, duplicate classes, absolute paths, and thread-safety claims. Run `mvn clean test-compile` and `mvn clean test` when appropriate and possible. Run browser tests only with a valid authorized environment.
+7. **Repair and review:** fix generated-code defects, rerun relevant checks, verify naming/package consistency, resource paths, wait strategy, exception handling, cleanup, dependency necessity, and documented commands.
+8. **Report:** give an evidence-based summary and exact validation status.
+
+Quality gates:
+- Static review, compilation, and browser execution are separate levels; report them separately.
+- If a command cannot run, explain why and do not claim success.
+- If browser execution is unavailable, mark browser tests **NOT RUN**, while reporting any static checks/compilation that actually passed.
+- Do not test unknown production systems or submit real transactions without authorization.
+
+## 8. FINAL ACCEPTANCE CHECKLIST
+Before completion, verify:
+- [ ] A coherent framework was implemented from scratch; unrelated files were not overwritten.
+- [ ] Selenium 4 and compatible Maven dependencies/plugins are used.
+- [ ] POM/PageFactory and `@FindBy` are implemented with private elements and meaningful page methods/getters.
+- [ ] Gherkin is readable and valid; steps map unambiguously; runner, hooks, and DI are compatible.
+- [ ] Browser setup, driver isolation (if applicable), teardown, and failure cleanup are reliable.
+- [ ] Properties, test data, waits, screenshots, logging, and reports are centralized and reusable without duplication.
+- [ ] Documentation and exact execution commands are present.
+- [ ] Validation claims are supported by actual command output; blockers and unrun tests are stated honestly.
+
+## 9. RESPONSE FORMAT + START
+Start by presenting the target architecture and short implementation plan, then immediately create and implement the files in the workspace. Do not stop at the plan or return only code snippets. After implementation, summarize:
+1. Files/components created.
+2. Architecture and key design choices.
+3. Exact commands executed and their actual results.
+4. Static review, compilation, and browser test status separately.
+5. Tests not run, reasons, known limitations, and application-specific values still required.
+
+Keep the solution generic across web applications. Start Phase 1 now.
+
+
+
+
+
+
+
+
+
+# SHORT HYBRID PROMPT: GENERIC SELENIUM BDD FRAMEWORK
+
+## ROLE
+Act as a Senior QA Automation Architect with 10+ years of experience.
+
+## GOAL
+Build a complete, reusable Selenium automation framework **from scratch** in the current VS Code workspace. Create real files and working code—not just a plan or code snippets.
+
+Do not reuse or depend on an existing automation framework. Avoid overwriting unrelated files. Keep the framework generic. Do not invent application-specific URLs, locators, credentials, or requirements.
+
+## HYBRID PROMPT METHOD
+Combine:
+- **Role:** senior automation architect.
+- **Context:** Java + Selenium 4 + Cucumber BDD + TestNG + Maven.
+- **Constraints:** reusable code, secure configuration, no deprecated APIs, no fake validation claims.
+- **Example:** use only clearly labelled generic demo scenarios.
+- **Workflow:** design → plan → implement → validate → repair → report.
+- **Acceptance criteria:** use the checklist below.
+
+Do not stop after design. Implement and validate the framework.
+
+## REQUIRED TECHNOLOGY
+- Java and Maven
+- Selenium WebDriver 4
+- Cucumber JVM + Cucumber-TestNG
+- TestNG
+- Page Object Model (POM) + PageFactory + `@FindBy`
+- ExtentReports and Cucumber HTML/JSON reports
+- SLF4J with a compatible logging backend
+- Java Properties configuration
+- Chrome, Firefox, and Edge support
+- Cucumber DataTable and Scenario Outline/Examples where useful
+- Selenium Manager unless a valid alternative is needed
+
+Use compatible dependency/plugin versions. Avoid duplicate or unnecessary dependencies.
+
+## PROJECT STRUCTURE
+Use one consistent base package, such as `com.example.automation`.
+
+- `pages/` — page objects
+- `utility/` — waits, screenshots, test-data and useful helpers
+- `config/` — configuration reader
+- `driver/` — browser factory and driver manager
+- `reporting/` — report management
+- `context/` — scenario context
+- `stepDefinition/` — Cucumber steps
+- `runner/` — TestNG/Cucumber runner
+- `hooks/` — scenario setup and teardown
+- `src/test/resources/features/` — Gherkin features
+- `src/test/resources/config/` — configuration
+- `pom.xml`, `README.md`, `.gitignore`
+- `docs/FRAMEWORK_ANALYSIS.md`
+- `docs/FRAMEWORK_EXECUTION.md`
+- `docs/VALIDATION_REPORT.md`
+
+Avoid duplicate classes, configs, and competing implementations.
+
+## IMPLEMENTATION RULES
+
+### 1. Maven and configuration
+Create a working `pom.xml` with Java settings, compatible dependencies, compiler plugin, and Surefire plugin.
+
+Configure browser, base URL, timeouts, headless mode, reports, and screenshots in properties. Allow system-property overrides. Never hardcode secrets or machine-specific paths.
+
+Document these commands:
+```bash
+mvn clean test
+mvn clean test -Dbrowser=chrome
+mvn clean test -Dcucumber.filter.tags="@smoke"
+mvn clean test -Dcucumber.filter.tags="@regression"
+```
+
+### 2. Browser and driver
+Create `BrowserFactory` and `DriverManager`. Add `Base` only if useful.
+
+Support Chrome, Firefox, and Edge. Validate browser names and required settings. Configure timeouts and window settings. Always quit the driver, including after failures.
+
+Use `ThreadLocal<WebDriver>` only when needed and clean it correctly. Do not enable parallel execution until all shared components are thread-safe. Do not hardcode driver executable paths.
+
+### 3. Page Object Model
+Use Selenium 4 POM + PageFactory.
+
+- Inject `WebDriver` through page constructors.
+- Call `PageFactory.initElements(driver, this)`.
+- Keep elements `private` and locate them with `@FindBy`.
+- Keep locators and page-specific actions inside page objects.
+- Add useful getters. Add setters only when meaningful.
+- Use business-action methods, not oversized page classes.
+- Do not use static WebDriver.
+- Do not put raw locators or browser setup in step definitions.
+
+Use real locators only when application details are available. Otherwise, label demo locators as examples and list what must be configured.
+
+### 4. Waits and Selenium quality
+Use Selenium 4 APIs and `Duration`-based explicit waits. Use `ExpectedConditions` for visibility, clickability, presence, invisibility, and state changes.
+
+Avoid fixed sleeps, Selenium 3 APIs, and unnecessary mixing of implicit and explicit waits. Do not use JavaScript clicks as a default workaround. Prefer stable IDs, names, and accessible attributes. Keep locators in page objects.
+
+Handle timeouts, missing elements, stale elements, and assertions clearly. Never swallow failures or report a failed test as passed.
+
+### 5. Cucumber BDD
+Create readable Gherkin features with `Feature`, `Scenario`, `Background`, `Scenario Outline`, and `Examples` where appropriate.
+
+Use meaningful tags such as `@smoke` and `@regression`. Keep Java code and locators out of feature files. Make scenarios independent and assertions observable.
+
+Create:
+- Cucumber step definitions grouped by business capability
+- TestNG Cucumber runner with correct feature/glue paths
+- Cucumber hooks for setup, screenshots, reporting, and cleanup
+- One compatible scenario-scoped DI method, such as PicoContainer
+- Constructor injection where appropriate
+
+Avoid ambiguous or duplicated step definitions. Use TestNG assertions with clear messages. Use DataTable and Scenario Outline when they improve data-driven coverage.
+
+Example only:
+```gherkin
+Feature: User authentication
+  @smoke
+  Scenario: Submit valid authentication details
+    Given the user opens the application
+    When the user submits valid authentication details
+    Then the authenticated user area should appear
+```
+This is illustrative, not an assumed application requirement.
+
+### 6. Utilities and reports
+Implement only useful, reusable components:
+- `ConfigReader`
+- `BrowserFactory` and `DriverManager`
+- `WaitUtils`
+- `ScreenshotUtils`
+- `ScenarioContext`
+- ExtentReports management
+- Logging configuration
+- `TestDataUtils` where needed
+- `ElementUtils`, `JavaScriptUtils`, or assertion helpers only when justified
+
+Use unique screenshot names and attach failure screenshots to the correct scenario. Generate ExtentReports and Cucumber HTML/JSON reports. Flush reports safely. Include useful logs, but never log passwords or tokens.
+
+Keep test data separate from page objects where practical. Never put credentials in feature files. Do not add Excel/database integrations unless required.
+
+## DOCUMENTATION
+`README.md`: prerequisites, setup, configuration, browsers, commands, tags, report paths, and troubleshooting.
+
+`docs/FRAMEWORK_ANALYSIS.md`: architecture, packages, dependencies, execution flow, class responsibilities, design choices, and risks.
+
+`docs/FRAMEWORK_EXECUTION.md`: configuration, commands, reports, screenshots, and troubleshooting.
+
+`docs/VALIDATION_REPORT.md`: files created, checks actually run, results, unrun tests, blockers, and remaining configuration.
+
+Execution flow:
+Maven → TestNG/Cucumber runner → feature → step definition → page object → browser/utility → assertion → hooks → report and cleanup.
+
+## WORKFLOW
+1. **Design:** outline architecture, packages, dependencies, and execution flow.
+2. **Plan:** list files and their purposes.
+3. **Build core:** Maven, configuration, driver, waits, context, hooks, logs, screenshots, and reports.
+4. **Build BDD:** runner, DI, features, steps, tags, and assertions.
+5. **Build pages:** PageFactory pages, locators, getters, and business actions.
+6. **Validate:** check Maven configuration, dependencies, compilation, Gherkin, step mappings, DI, hooks, configuration, cleanup, reports, deprecated APIs, duplicate classes, and paths.
+7. **Repair:** fix issues and rerun relevant checks.
+8. **Report:** summarize files, design, commands, results, and limitations.
+
+Run `mvn clean test-compile` and `mvn clean test` when possible. Run browser tests only when a valid, authorized application environment is available.
+
+## ACCEPTANCE CHECKLIST
+- [ ] Framework implemented from scratch; unrelated files preserved.
+- [ ] Selenium 4 and compatible Maven dependencies used.
+- [ ] POM, PageFactory, `@FindBy`, private elements, and useful page methods implemented.
+- [ ] Features, steps, runner, hooks, DI, and assertions are consistent.
+- [ ] Browser lifecycle and failure cleanup work correctly.
+- [ ] Configuration, waits, context, screenshots, logs, and reports are reusable.
+- [ ] Documentation and run commands are included.
+- [ ] Validation claims match actual command results.
+
+Static review, compilation, and browser execution are different checks. Report each separately. If a command cannot run, explain why. Mark browser tests **NOT RUN** if the environment is unavailable. Never claim unverified success. Do not test production systems or submit real transactions without authorization.
+
+## START AND FINAL RESPONSE
+Start with a brief architecture and plan, then immediately create the files. Do not stop at planning.
+
+At the end, report:
+1. Files created.
+2. Architecture and key choices.
+3. Commands run and actual results.
+4. Static review, compilation, and browser-test status.
+5. Tests not run, known limitations, and application-specific values still needed.
+
+Keep everything generic and reusable. Begin now.
+
+
+
+
+
+
+
+
+
+MINIMAL HYBRID PROMPT — SELENIUM BDD FRAMEWORK
+
+Act as a Senior QA Automation Architect (10+ years). Build a **generic Java Selenium automation framework from scratch** in this VS Code workspace. Create working files, not just a plan. Do not depend on an existing framework, overwrite unrelated files, or invent application-specific details.
+
+## Stack
+Java, Maven, Selenium 4, Cucumber JVM + TestNG, POM + PageFactory (`@FindBy`), ExtentReports, Cucumber HTML/JSON reports, SLF4J logging, Java Properties, Chrome/Firefox/Edge, and Cucumber DataTable/Scenario Outline where useful. Use compatible dependency versions and Selenium Manager.
+
+## Structure
+Use one base package (e.g. `com.example.automation`) with `pages`, `stepDefinition`, `runner`, `hooks`, `driver`, `config`, `utility`, `reporting`, and `context` packages. Add feature/config resources, `pom.xml`, `README.md`, `.gitignore`, and:
+- `docs/FRAMEWORK_ANALYSIS.md`
+- `docs/FRAMEWORK_EXECUTION.md`
+- `docs/VALIDATION_REPORT.md`
+
+## Build requirements
+1. **Maven/config:** Valid POM, compiler/Surefire plugins, centralized browser/URL/timeout/headless/report/screenshot properties, system-property overrides, no secrets or machine-specific paths.
+2. **Driver:** `BrowserFactory`, `DriverManager`, reliable setup/quit, validated browser names, no hardcoded driver paths. Use `ThreadLocal` only if needed; no parallel mode until thread safety is proven.
+3. **Pages:** Inject `WebDriver`; call `PageFactory.initElements`; keep `@FindBy` elements private; use meaningful getters and business-action methods. Setters only when useful. No static driver.
+4. **BDD:** Readable Gherkin; independent scenarios; meaningful tags; runner, step definitions, hooks, and one compatible scenario-scoped DI approach (e.g. PicoContainer). Keep locators/browser code out of steps. Use clear assertions and avoid ambiguous steps.
+5. **Utilities:** Add only useful `ConfigReader`, `WaitUtils`, `ScreenshotUtils`, `ScenarioContext`, reporting/logging, and test-data helpers. Use explicit waits with `Duration`; avoid fixed sleeps and Selenium 3 APIs. JavaScript clicks only when justified.
+6. **Failures/reports:** Preserve root causes; never swallow failures. Capture unique failure screenshots, attach them to the right scenario, generate reports, and clean up drivers after failures. Do not log secrets.
+7. **Tests/data:** Use DataTable/Scenario Outline where helpful. Keep credentials out of feature files. Use only known application locators; mark generic examples as illustrative.
+
+## Workflow
+1. Design architecture and list files.
+2. Implement core configuration, driver, waits, context, hooks, logging, and reporting.
+3. Implement runner, DI, features, steps, pages, and utilities.
+4. Validate dependencies, compilation, Gherkin/step mappings, lifecycle, reports, paths, and deprecated APIs.
+5. Fix issues and rerun checks.
+6. Update README and the three docs with architecture, setup, commands, troubleshooting, actual results, blockers, and limitations.
+
+Do not stop after planning. Run when possible:
+```bash
+mvn clean test-compile
+mvn clean test
+mvn clean test -Dbrowser=chrome
+mvn clean test -Dcucumber.filter.tags="@smoke"
+```
+Document regression-tag execution too.
+
+## Acceptance
+- Complete, consistent framework; unrelated files preserved.
+- Selenium 4, PageFactory, `@FindBy`, BDD, DI, hooks, cleanup, configuration, waits, logging, screenshots, and reports implemented.
+- README/docs and run commands included.
+- Separate **static review**, **compilation**, and **browser execution** results.
+- Never claim a check passed unless it actually ran. If browser/app access is missing, mark browser tests **NOT RUN** and explain why. Do not run unauthorized production actions.
+
+## Response
+Start with a short architecture/plan, then create the files. Finish with files created, commands/results, validation status, unrun tests, and remaining application-specific settings. Keep it reusable across applications. Begin now.
